@@ -8,8 +8,6 @@ def text_to_binary(text) -> str:
 
 
 def create_image_with_random_fill(binary_data, image_width, image_height):
-    total_pixels = image_width * image_height
-
     while len(binary_data) % 24 != 0:
         binary_data = binary_data + str(random.randint(0, 1))
 
@@ -27,24 +25,53 @@ def create_image_with_random_fill(binary_data, image_width, image_height):
                 b = int(pixels[pixel_index][16:], 2)
                 pixel_index += 1
             else:
-                r = random.randint(0, 255)
-                g = random.randint(0, 255)
-                b = random.randint(0, 255)
+                r = random.randint(254, 255)
+                g = random.randint(254, 255)
+                b = random.randint(254, 255)
             image.putpixel((x, y), (r, g, b))
 
     return image
 
 
-def main():
+def text_to_image(width=700, height=500):
     with open("data.txt", "r") as file:
         text = file.read().replace("\n", "")
-    image_width = 1920
-    image_height = 1080
+    width = 700
+    height = 500
 
     binary_data = text_to_binary(text)
-    image = create_image_with_random_fill(binary_data, image_width, image_height)
+    image = create_image_with_random_fill(binary_data, width, height)
     image.save("output_image.png")
     image.show()
+
+
+def binary_to_text(binary_data):
+    text = ""
+    for i in range(0, len(binary_data), 8):
+        byte = binary_data[i : i + 8]
+        text += chr(int(byte, 2))
+    return text
+
+
+def image_to_text(image_path):
+    image = Image.open(image_path)
+    width, height = image.size
+    binary_data = ""
+
+    for y in range(height):
+        for x in range(width):
+            r, g, b = image.getpixel((x, y))
+            binary_data += format(r, "08b")
+            binary_data += format(g, "08b")
+            binary_data += format(b, "08b")
+
+    text = binary_to_text(binary_data)
+    return text
+
+
+def main():
+    text_to_image()
+    # print(image_to_text("output_image.png")[0:5000])
 
 
 if __name__ == "__main__":
