@@ -49,7 +49,7 @@ def text_to_image():
         text = file.read().replace("\n", "")
 
     binary_data = text_to_binary(text)
-    image = create_image_with_random_fill(binary_data, 32)
+    image = create_image_with_random_fill(binary_data, 8)
     image.save("output_image.png")
     image.show()
 
